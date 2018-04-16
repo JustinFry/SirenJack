@@ -1,0 +1,86 @@
+Bastille Tracking Number 43
+
+
+
+Overview
+
+The deployment of ATI’s mass notification system in San Francisco, CA (known 
+by the City and County of San Francisco as the city’s Outdoor Public Warning 
+System) is vulnerable to false alarms. It can be triggered by specially-
+crafted malicious radio transmissions, without requiring physical access to 
+any part of the system.
+
+
+
+Affected Devices
+
+In the basic configuration used by the SF OPWS:
+
+HPSS16
+HPSS32
+MHPSS
+ALERT4000*
+
+
+
+Proof-of-Concept Details
+
+These findings apply to the current SF OPWS configuration:
+
+1. Discovering input/output frequencies
+2. Air interface analysis
+3. Malicious packet construction and transmission
+
+The SF OPWS is exercised every Tuesday at noon by the SF Department of 
+Emergency Management (DEM) in a test mode where all nodes are simultaneously 
+triggered, and then each node is queried for its state in series (to which 
+the node responds with its status).
+
+The configuration uses a standard dedicated analog repeater approach. A 
+central console (at the SF DEM) is used to trigger and monitor the nodes. 
+The console, and the nodes, connect to analog radios that transmit and 
+receive through the repeater to enable coverage across San Francisco.
+
+A custom digital packet-based protocol is used to transmit commands and 
+telemetry between the console and nodes.
+
+The frames to activate the nodes are broadcast during the SF midday test, 
+and contain the same payload each week. As they are transmitted in the 
+clear, it is possible to construct similarly valid sequence of commands and 
+transmit them on the repeater’s input frequency, thereby triggering all 
+nodes. It is trivial to construct a different sequence of payloads, and/or 
+attempt fuzzing, to see what other functions can be activated (for instance, 
+live audio re-broadcast via radio).
+
+* Learnt/guessed from public research only.
+
+
+
+Mitigation
+
+An attacker must find the dedicated input/output frequencies in use, reverse 
+engineer the air interface, be able to craft malicious packets, and transmit 
+those packets.
+
+
+
+Suggested Solutions
+
+Use standard approaches for message encryption and authentication.
+
+Consideration of anti-jamming strategies is also advised.
+
+
+
+Test Environment
+
+San Francisco Outdoor Public Warning System (OPWS)
+
+Note: No active testing was performed (i.e. no signals were transmitted). 
+All analysis has been conducted passively.
+
+
+
+Credits
+
+Balint Seeber, Bastille
